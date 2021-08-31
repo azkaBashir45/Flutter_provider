@@ -24,6 +24,7 @@ class TodoApp extends StatefulWidget {
 }
 
 class _TodoAppState extends State<TodoApp> {
+  TaskData obj = TaskData();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,6 +32,23 @@ class _TodoAppState extends State<TodoApp> {
         title: Text("Todo"),
         backgroundColor: Colors.orangeAccent,
       ),
+      body: ListView.builder(
+          itemCount: obj.listData.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(
+                '${obj.listData[index].title}',
+              ),
+              trailing: Checkbox(
+                value: obj.listData[index].isDone,
+                onChanged: (value) {
+                  setState(() {
+                    obj.listData[index].isDone = value;
+                  });
+                },
+              ),
+            );
+          }),
     );
   }
 }
@@ -39,12 +57,11 @@ class Task {
   String? title;
   bool? isDone;
   Task({this.title, this.isDone});
-
 }
-class TaskData{
- 
- List<Task> listData=[
-   Task(title:'Book', isDone:false)
- ];
 
+class TaskData {
+  List<Task> listData = [
+    Task(title: 'Book', isDone: false),
+    
+  ];
 }
