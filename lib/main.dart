@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,23 +9,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: TodoApp(),
-      debugShowCheckedModeBanner: false,
+    //y provider ka packge h jaha hm change kry gy waha automatically hojy gy---kis data ko create krna h to hm waha create krdy gy
+    return ChangeNotifierProvider(
+      create: (context) => TaskData(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        home: TodoApp(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
 
-class TodoApp extends StatefulWidget {
-  const TodoApp({Key? key}) : super(key: key);
-
-  @override
-  _TodoAppState createState() => _TodoAppState();
-}
-
-class _TodoAppState extends State<TodoApp> {
-  TaskData obj = TaskData();
+class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,18 +30,16 @@ class _TodoAppState extends State<TodoApp> {
         backgroundColor: Colors.orangeAccent,
       ),
       body: ListView.builder(
-          itemCount: obj.listData.length,
+          itemCount: context.watch<TaskData>().listData.length,
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(
-                '${obj.listData[index].title}',
+                '${context.watch<TaskData>().listData[index].title}',
               ),
               trailing: Checkbox(
-                value: obj.listData[index].isDone,
+                value: context.watch<TaskData>().listData[index].isDone,
                 onChanged: (value) {
-                  setState(() {
-                    obj.listData[index].isDone = value;
-                  });
+                  context.read<TaskData>().toogle(index, value);
                 },
               ),
             );
@@ -59,9 +54,14 @@ class Task {
   Task({this.title, this.isDone});
 }
 
-class TaskData {
+//jb wrap krna to jisko kry gy to usko extend krna pry gy changeNotifier
+class TaskData extends ChangeNotifier {
   List<Task> listData = [
     Task(title: 'Book', isDone: false),
-    
   ];
+  toogle(int index, bool? value) {
+    listData[index].isDone = value;
+    //hr koi use krly isko usky ly hm kry gy
+    notifyListeners();
+  }
 }
